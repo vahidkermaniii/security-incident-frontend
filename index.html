@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سامانه ثبت حوادث امنیتی</title>
+
+  <!-- Tailwind (لوکال) -->
+  <link rel="stylesheet" href="./vendor/tailwind/tailwind.css">
+
+  <!-- Font Awesome (لوکال) -->
+  <link rel="stylesheet" href="./vendor/fontawesome/css/all.min.css">
+
+  <!-- Persian Datepicker (لوکال) -->
+  <link rel="stylesheet" href="./vendor/persian-datepicker/persian-datepicker.min.css" />
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="./main.css" />
+
+  <!-- اطمینان از ارتفاع نمودارها -->
+  <style>
+    .chart-box { width: 100%; }
+    .chart-box--tall  { height: 360px; }
+    .chart-box--short { height: 260px; }
+    .chart-box:not(.chart-box--tall):not(.chart-box--short) { height: 320px; }
+    .echart { width: 100%; height: 100%; }
+    /* فیلتر منابع */
+    .resource-filter.active { background-color: rgb(37 99 235); color: #fff; }
+  </style>
+
+  <!-- آدرس API برای اتصال فرانت به بک‌اند Render (بدون تغییر بقیه کد) -->
+  <script>
+    window.API_BASE = window.API_BASE || "https://security-incident-backend.onrender.com/api";
+  </script>
+</head>
+<body class="antialiased">
+  <!-- jQuery (لوکال برای PersianDatepicker) -->
+  <script src="./vendor/jquery/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+  <!-- Persian Date core + Datepicker (لوکال) -->
+  <script src="./vendor/persian-date/persian-date.js"></script>
+  <script src="./vendor/persian-datepicker/persian-datepicker.min.js"></script>
+
+  <!-- Login View -->
+  <div id="loginView" class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-8 space-y-6 rounded-lg shadow-lg card">
+      <div class="text-center">
+        <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
+        <h2 class="mt-4 text-3xl font-bold text-white">سامانه ثبت حوادث امنیتی</h2>
+        <p class="mt-2 text-sm text-gray-400">برای ورود، از اطلاعات کاربری خود استفاده کنید.</p>
+      </div>
+      <form id="loginForm" class="space-y-6" autocomplete="on">
+        <div>
+          <label for="username" class="block mb-2 text-sm font-medium text-gray-300">نام کاربری</label>
+          <input type="text" id="username" name="username" autocomplete="username"
+                 class="input-field w-full p-2.5 rounded-lg" placeholder="username" required />
+        </div>
+        <div>
+          <label for="password" class="block mb-2 text-sm font-medium text-gray-300">گذرواژه</label>
+          <input type="password" id="password" name="password" autocomplete="current-password"
+                 class="input-field w-full p-2.5 rounded-lg" placeholder="********" required />
+        </div>
+        <div id="loginError" class="text-red-400 text-sm hidden">نام کاربری یا گذرواژه اشتباه است.</div>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-white font-bold btn-primary">
+          <i class="fas fa-sign-in-alt ml-2"></i>ورود به سامانه
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App (after login) -->
+  <div id="mainContent" class="hidden">
+    <!-- Top Nav -->
+    <nav class="bg-gray-800 p-4 flex justify-between items-center">
+      <div class="flex space-x-4 space-x-reverse">
+        <span class="nav-btn text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700" data-target="homePage">
+          <i class="fas fa-home ml-2"></i>خانه
+        </span>
+        <span class="nav-btn text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700" data-target="incidentsPage">
+          <i class="fas fa-exclamation-triangle ml-2"></i>حوادث امنیتی من
+        </span>
+        <span id="navAdmin" class="nav-btn text-white font-bold py-2 px-4 rounded-lg system-admin-only admin-only" data-target="adminPage">
+          <i class="fas fa-cog ml-2"></i>مدیریت حوادث
+        </span>
+        <span id="navBaseData" class="nav-btn text-white font-bold py-2 px-4 rounded-lg system-admin-only admin-only" data-target="baseDataPage">
+          <i class="fas fa-database ml-2"></i>اطلاعات پایه
+        </span>
+        <span id="navUserManagement" class="nav-btn text-white font-bold py-2 px-4 rounded-lg system-admin-only admin-only" data-target="userManagementPage">
+          <i class="fas fa-users ml-2"></i>مدیریت کاربران
+        </span>
+        <span class="nav-btn text-white font-bold py-2 px-4 rounded-lg" data-target="resourcesPage">
+          <i class="fas fa-book-open ml-2"></i>فایل‌های آموزشی
+        </span>
+        <span id="navDashboard" class="nav-btn text-white font-bold py-2 px-4 rounded-lg system-admin-only admin-only" data-target="dashboardPage">
+          <i class="fas fa-chart-pie ml-2"></i>داشبورد
+        </span>
+      </div>
+      <div class="flex items-center">
+        <span class="text-gray-300">خوش آمدید، <strong id="displayName"></strong>!</span>
+
+        <button id="navIncidentBtnTop" class="btn-primary text-white font-bold py-2 px-4 rounded-lg text-sm ml-4">
+          <i class="fas fa-plus ml-2"></i>ثبت حادثه جدید
+        </button>
+
+        <button id="openProfileBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg ml-4">
+          <i class="fas fa-user ml-2"></i> تغییر رمز
+        </button>
+
+        <button id="logoutBtn" class="btn-danger text-white font-bold py-2 px-4 rounded-lg text-sm ml-4">
+          <i class="fas fa-sign-out-alt ml-2"></i>خروج
+        </button>
+      </div>
+    </nav>
+
+    <!-- Home -->
+    <div id="homePage" class="p-6">
+      <div class="bg-red-900 border-l-4 border-red-500 text-red-100 p-6 rounded-lg mb-6 text-lg">
+        <p class="font-bold text-xl">
+          <i class="fas fa-exclamation-triangle mr-2"></i>راهنمایی در شرایط اضطراری
+        </p>
+        <p class="mt-2">در شرایط فورس و حاد امنیتی، بلافاصله با شماره‌های زیر تماس بگیرید:</p>
+        <ul class="reset mt-2">
+          <li>موبایل: <a href="tel:09126471396" class="hover:underline">۰۹۱۲۶۴۷۱۳۹۶</a></li>
+          <li>داخلی: <strong>۲۱۲</strong></li>
+        </ul>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+          <img src="./assets/img/shield.png" class="mx-auto mb-4" alt="گزارش کوچک‌ترین حوادث" />
+          <h3 class="font-bold text-white mb-2">گزارش حتی کوچک‌ترین حوادث</h3>
+          <p class="text-gray-300 text-sm">هر حادثه کوچک امنیتی می‌تواند نشانه یک تهدید بزرگ باشد.</p>
+        </div>
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+          <img src="./assets/img/clock.png" class="mx-auto mb-4" alt="سرعت گزارش‌دهی" />
+          <h3 class="font-bold text-white mb-2">سرعت گزارش‌دهی مهم است</h3>
+          <p class="text-gray-300 text-sm">هرچه سریع‌تر حادثه را گزارش کنید، امکان مهار و کاهش خسارت بیشتر خواهد بود.</p>
+        </div>
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+          <img src="./assets/img/teamwork.png" class="mx-auto mb-4" alt="مسئولیت گزارش" />
+          <h3 class="font-bold text-white mb-2">گزارش وظیفه است نه مقصر بودن</h3>
+          <p class="text-gray-300 text-sm">هدف ارتقاء امنیت است، نه پیدا کردن مقصر.</p>
+        </div>
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+          <img src="./assets/img/lock.png" class="mx-auto mb-4" alt="مسئولیت امنیت" />
+          <h3 class="font-bold text-white mb-2">امنیت اطلاعات مسئولیت همه است</h3>
+          <p class="text-gray-300 text-sm">همه‌ی کارکنان در این زمینه مسئول هستند.</p>
+        </div>
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+          <img src="./assets/img/combo-chart.png" class="mx-auto mb-4" alt="آمار دقیق" />
+          <h3 class="font-bold text-white mb-2">آمار دقیق = پیشگیری بهتر</h3>
+          <p class="text-gray-300 text-sm">گزارش دقیق، داده‌های لازم برای تحلیل را فراهم می‌کند.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Incidents -->
+    <div id="incidentsPage" class="p-6 hidden relative">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold text-white">گزارش‌های من</h2>
+        <button id="exportMyIncXlsx" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg text-sm">
+          <i class="fas fa-file-excel ml-2"></i>خروجی اکسل
+        </button>
+      </div>
+      <div class="card rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-300">
+            <thead class="text-xs text-gray-300 uppercase bg-gray-700">
+              <tr>
+                <th class="px-6 py-3">شناسه</th>
+                <th class="px-6 py-3">عنوان حادثه</th>
+                <th class="px-6 py-3">دسته‌بندی</th>
+                <th class="px-6 py-3">محل وقوع</th>
+                <th class="px-6 py-3">تاریخ و ساعت ثبت</th>
+                <th class="px-6 py-3">درجه ریسک</th>
+                <th class="px-6 py-3">وضعیت</th>
+                <th class="px-6 py-3">اقدام ادمین</th>
+                <th class="px-6 py-3">عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="userIncidentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="userIncPager" class="table-pager mt-4 text-center">
+        <div class="pager-inner">
+          <label class="pager-label">
+            نمایش
+            <select class="pager-size">
+              <option>10</option>
+              <option>25</option>
+              <option>100</option>
+            </select>
+            ردیف در هر صفحه
+          </label>
+          <div class="pager-actions">
+            <button class="pager-first" title="صفحه اول">«</button>
+            <button class="pager-prev" title="قبلی">‹</button>
+            <span class="pager-info">صفحه 1 از 1</span>
+            <button class="pager-next" title="بعدی">›</button>
+            <button class="pager-last" title="صفحه آخر">»</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin: All Incidents -->
+    <div id="adminPage" class="p-6 hidden system-admin-only admin-only relative">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold text-white">
+          <i class="fas fa-cog ml-2"></i>مدیریت تمام حوادث
+        </h2>
+        <button id="exportAllIncXlsx" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg text-sm">
+          <i class="fas fa-file-excel ml-2"></i>خروجی اکسل
+        </button>
+      </div>
+
+      <div class="filter-section mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div>
+            <label for="searchInput" class="block mb-2 text-sm font-medium text-gray-300">جستجو در عنوان/شرح</label>
+            <input type="text" id="searchInput" class="input-field w-full p-2 rounded-lg" placeholder="متن برای جستجو..." autocomplete="on" />
+          </div>
+          <div>
+            <label for="statusFilter" class="block mb-2 text-sm font-medium text-gray-300">وضعیت</label>
+            <select id="statusFilter" class="input-field w-full p-2 rounded-lg">
+              <option value="">همه وضعیت‌ها</option>
+            </select>
+          </div>
+          <div>
+            <label for="priorityFilter" class="block mb-2 text-sm font-medium text-gray-300">درجه ریسک</label>
+            <select id="priorityFilter" class="input-field w-full p-2 rounded-lg">
+              <option value="">همه درجه‌های ریسک</option>
+            </select>
+          </div>
+          <div id="categoryFilterContainer">
+            <label for="categoryFilter" class="block mb-2 text-sm font-medium text-gray-300">دسته‌بندی</label>
+            <select id="categoryFilter" class="input-field w-full p-2 rounded-lg">
+              <option value="">همه دسته‌ها</option>
+              <option value="1">امنیت سایبری</option>
+              <option value="2">پدافند غیر عامل</option>
+            </select>
+          </div>
+          <div id="locationFilterContainer">
+            <label for="locationFilter" class="block mb-2 text-sm font-medium text-gray-300">محل وقوع</label>
+            <select id="locationFilter" class="input-field w-full p-2 rounded-lg">
+              <option value="">همه مکان‌ها</option>
+            </select>
+          </div>
+          <div>
+            <label for="reporterFilter" class="block mb-2 text-sm font-medium text-gray-300">گزارش‌دهنده</label>
+            <select id="reporterFilter" class="input-field w-full p-2 rounded-lg">
+              <option value="">همه گزارش‌دهندگان</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button id="resetFiltersBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg text-sm">بازنشانی فیلترها</button>
+        </div>
+      </div>
+      <div class="card rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-300">
+            <thead class="text-xs text-gray-300 uppercase bg-gray-700">
+              <tr>
+                <th class="px-6 py-3">شناسه</th>
+                <th class="px-6 py-3">کاربر</th>
+                <th class="px-6 py-3">عنوان حادثه</th>
+                <th class="px-6 py-3">دسته‌بندی</th>
+                <th class="px-6 py-3">محل وقوع</th>
+                <th class="px-6 py-3">تاریخ و ساعت ثبت</th>
+                <th class="px-6 py-3">درجه ریسک</th>
+                <th class="px-6 py-3">وضعیت</th>
+                <th class="px-6 py-3">عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="allIncidentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="allIncPager" class="table-pager mt-4 text-center">
+        <div class="pager-inner">
+          <label class="pager-label">
+            نمایش
+            <select class="pager-size">
+              <option>10</option>
+              <option>25</option>
+              <option>100</option>
+            </select>
+            ردیف در هر صفحه
+          </label>
+          <div class="pager-actions">
+            <button class="pager-first" title="صفحه اول">«</button>
+            <button class="pager-prev" title="قبلی">‹</button>
+            <span class="pager-info">صفحه 1 از 1</span>
+            <button class="pager-next" title="بعدی">›</button>
+            <button class="pager-last" title="صفحه آخر">»</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Base Data -->
+    <div id="baseDataPage" class="p-6 hidden system-admin-only admin-only">
+      <h2 class="text-2xl font-semibold text-white mb-4">
+        <i class="fas fa-database ml-2"></i>مدیریت اطلاعات پایه
+      </h2>
+      <div class="tab-container">
+        <div class="tab active" data-tab="titles">عنوان حوادث</div>
+        <div class="tab" data-tab="locations">محل‌های وقوع</div>
+        <div class="tab" data-tab="priorities">درجه‌های ریسک</div>
+        <div class="tab" data-tab="statuses">وضعیت‌ها</div>
+      </div>
+
+      <!-- Titles -->
+      <div class="tab-content active" id="titles-tab">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="base-data-card">
+            <h3 class="font-bold text-white">عنوان حوادث سایبری</h3>
+            <div class="mb-4">
+              <button class="btn-primary text-white font-bold py-2 px-4 rounded-lg w-full add-config-item" data-type="cyber">
+                <i class="fas fa-plus ml-2"></i>افزودن عنوان سایبری
+              </button>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+              <ul id="cyberTitlesList" class="space-y-2"></ul>
+            </div>
+          </div>
+          <div class="base-data-card">
+            <h3 class="font-bold text-white">عنوان حوادث پدافند غیر عامل</h3>
+            <div class="mb-4">
+              <button class="btn-primary text-white font-bold py-2 px-4 rounded-lg w-full add-config-item" data-type="physical">
+                <i class="fas fa-plus ml-2"></i>افزودن عنوان پدافند غیر عامل
+              </button>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+              <ul id="physicalTitlesList" class="space-y-2"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locations -->
+      <div class="tab-content" id="locations-tab">
+        <div class="base-data-card">
+          <h3 class="font-bold text-white">مدیریت محل‌های وقوع</h3>
+          <div class="mb-4">
+            <button class="btn-primary text-white font-bold py-2 px-4 rounded-lg w-full add-config-item" data-type="location">
+              <i class="fas fa-plus ml-2"></i>افزودن محل جدید
+            </button>
+          </div>
+          <div class="max-h-60 overflow-y-auto">
+            <ul id="locationList" class="space-y-2"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priorities -->
+      <div class="tab-content" id="priorities-tab">
+        <div class="base-data-card">
+          <h3 class="font-bold text-white">مدیریت درجه‌های ریسک</h3>
+          <div class="mb-4">
+            <button class="btn-primary text-white font-bold py-2 px-4 rounded-lg w-full add-config-item" data-type="priority">
+              <i class="fas fa-plus ml-2"></i>افزودن درجه ریسک
+            </button>
+          </div>
+          <div class="max-h-60 overflow-y-auto">
+            <ul id="priorityList" class="space-y-2"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statuses -->
+      <div class="tab-content" id="statuses-tab">
+        <div class="base-data-card">
+          <h3 class="font-bold text-white">مدیریت وضعیت‌ها</h3>
+          <div class="mb-4">
+            <button class="btn-primary text-white font-bold py-2 px-4 rounded-lg w-full add-config-item" data-type="status">
+              <i class="fas fa-plus ml-2"></i>افزودن وضعیت
+            </button>
+          </div>
+          <div class="max-h-60 overflow-y-auto">
+            <ul id="statusList" class="space-y-2"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resources -->
+    <div id="resourcesPage" class="p-6 hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold text-white">
+          <i class="fas fa-book-open mr-2"></i>فایل‌های آموزشی
+        </h2>
+
+        <div class="flex items-center gap-2">
+          <!-- فیلتر: همه / سایبری / پدافندی -->
+          <div class="bg-gray-700 rounded-lg p-1 text-sm">
+            <button type="button" class="resource-filter active px-3 py-1 rounded-md font-bold" id="resourcesFilterAll">همه</button>
+            <button type="button" class="resource-filter px-3 py-1 rounded-md font-bold" id="resourcesFilterCyber">سایبری</button>
+            <button type="button" class="resource-filter px-3 py-1 rounded-md font-bold" id="resourcesFilterPhysical">پدافندی</button>
+          </div>
+
+          <!-- ادمین سیستم و ادمین پدافند هر دو ببینند -->
+          <button id="addResourceBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg admin-only hidden">
+            <i class="fas fa-plus ml-2"></i>افزودن فایل آموزشی
+          </button>
+        </div>
+      </div>
+
+      <div id="resourcesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- Dashboard (system-admin/defense-admin) -->
+    <div id="dashboardPage" class="p-6 hidden system-admin-only">
+      <h2 class="text-2xl font-semibold text-white mb-4">
+        <i class="fas fa-chart-pie ml-2"></i>داشبورد امنیت
+      </h2>
+
+      <!-- KPIs -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">کل حوادث</div>
+          <div id="dbTotal" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">حوادث سایبری</div>
+          <div id="dbCyber" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">حوادث پدافندی</div>
+          <div id="dbPhysical" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">مشخص‌نشده</div>
+          <div id="dbUnknown" class="text-2xl font-bold text-white mt-1">—</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">در حال بررسی</div>
+          <div id="dbPending" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">حل‌شده</div>
+          <div id="dbClosed" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg">
+          <div class="text-sm text-gray-400">رد شده</div>
+          <div id="dbRejected" class="text-2xl font-bold text-white mt-1">0</div>
+        </div>
+
+        <div class="card p-4 rounded-lg md:col-span-1">
+          <div class="text-sm text-gray-400">میانگین تا اولین اقدام</div>
+          <div id="dbAvgFirstAction" class="text-xl font-bold text-white mt-1">—</div>
+          <div class="mt-3 text-sm text-gray-400">میانگین تا حل</div>
+          <div id="dbAvgResolve" class="text-xl font-bold text-white mt-1">—</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">روند ثبت ۳۰ روز اخیر</h3>
+        <div class="chart-box chart-box--tall">
+          <div id="chartDaily" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">وضعیت‌ها در ۴ هفته اخیر</h3>
+        <div class="chart-box">
+          <div id="chartWeeks" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">محل‌های وقوع (سایبری/پدافند)</h3>
+        <div class="chart-box">
+          <div id="chartLocations" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">تفکیک درجه ریسک</h3>
+        <div class="chart-box chart-box--short">
+          <div id="chartPriority" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">روند ۳۰ روز اخیر برحسب دسته‌بندی</h3>
+        <div class="chart-box chart-box--tall">
+          <div id="chartTrendByCat30" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">تجمعی ثبت در ۳۰ روز اخیر</h3>
+        <div class="chart-box">
+          <div id="chartCumulative30" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">پارِتو محل‌های وقوع</h3>
+        <div class="chart-box">
+          <div id="chartParetoLocations" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">قیف وضعیت‌ها</h3>
+        <div class="chart-box chart-box--short">
+          <div id="chartStatusFunnel" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">توزیع زمان تا اولین اقدام</h3>
+        <div class="chart-box">
+          <div id="chartFirstActionHist" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">توزیع زمان تا حل‌شدن</h3>
+        <div class="chart-box">
+          <div id="chartResolveHist" class="echart"></div>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-lg mt-6">
+        <h3 class="text-lg font-semibold text-white mb-2">چگالی ثبت در ۹۰ روز اخیر (تقویمی)</h3>
+        <div class="chart-box">
+          <div id="chartCalendarHeat" class="echart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating 'New Incident' Button -->
+    <button id="navIncidentBtn" class="btn-primary text-white font-bold rounded-lg fixed bottom-6 left-6 px-4 py-3 shadow-lg">
+      <i class="fas fa-plus ml-2"></i>ثبت حادثه جدید
+    </button>
+
+    <!-- Theme Toggle -->
+    <div id="themeToggle" class="theme-toggle" aria-label="تغییر تم">
+      <i class="fas fa-moon text-yellow-400"></i>
+    </div>
+  </div> <!-- /#mainContent -->
+
+  <!-- Modals -->
+  <!-- New Incident -->
+  <div id="newIncidentModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-2xl p-6 rounded-xl shadow-lg m-4">
+      <form id="newIncidentForm" autocomplete="on">
+        <h3 class="text-xl font-bold mb-4 text-white">ثبت حادثه امنیتی جدید</h3>
+        <div class="space-y-4">
+          <div>
+            <label for="incidentCategory" class="block mb-2 text-sm font-medium text-gray-300">دسته‌بندی حادثه</label>
+            <select id="incidentCategory" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="">انتخاب کنید...</option>
+              <option value="1">امنیت سایبری</option>
+              <option value="2">پدافند غیر عامل</option>
+            </select>
+          </div>
+          <div>
+            <label for="incidentTitleSelect" class="block mb-2 text-sm font-medium text-gray-300">عنوان حادثه</label>
+            <select id="incidentTitleSelect" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="">ابتدا دسته‌بندی را انتخاب کنید...</option>
+            </select>
+            <input type="text" id="incidentTitleOther" class="input-field w-full p-2.5 rounded-lg mt-2 hidden" placeholder="عنوان حادثه را وارد کنید" />
+          </div>
+          <div>
+            <label for="incidentLocation" class="block mb-2 text-sm font-medium text-gray-300">محل وقوع حادثه</label>
+            <select id="incidentLocation" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="">انتخاب کنید...</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="incidentDate" class="block mb-2 text-sm font-medium text-gray-300">تاریخ وقوع (شمسی)</label>
+              <input type="text" id="incidentDate" class="input-field w-full p-2.5 rounded-lg text-center" placeholder="روی فیلد کلیک کنید" required autocomplete="off" />
+            </div>
+            <div>
+              <label for="incidentTime" class="block mb-2 text-sm font-medium text-gray-300">ساعت تقریبی وقوع</label>
+              <input type="time" id="incidentTime" class="input-field w-full p-2.5 rounded-lg" required />
+            </div>
+          </div>
+          <div>
+            <label for="incidentDescription" class="block mb-2 text-sm font-medium text-gray-300">شرح کامل حادثه</label>
+            <textarea id="incidentDescription" rows="4" class="input-field w-full p-2.5 rounded-lg" required></textarea>
+          </div>
+          <div>
+            <label for="incidentPriority" class="block mb-2 text-sm font-medium text-gray-300">درجه ریسک</label>
+            <select id="incidentPriority" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="">انتخاب کنید...</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="cancelNewIncidentBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ثبت گزارش</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Incident Details -->
+  <div id="incidentDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-2xl p-6 rounded-xl shadow-lg م-4">
+      <h3 class="text-xl font-bold mb-4 text-white">جزئیات حادثه امنیتی</h3>
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-300">شناسه حادثه:</label>
+            <p id="detail-id" class="input-field p-2 rounded-lg"></p>
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-300">کاربر گزارش‌دهنده:</label>
+            <p id="detail-reporter" class="input-field p-2 rounded-lg"></p>
+          </div>
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-300">عنوان حادثه:</label>
+          <p id="detail-title" class="input-field p-2 rounded-lg"></p>
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-300">محل وقوع حادثه:</label>
+          <p id="detail-location" class="input-field p-2 rounded-lg"></p>
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-300">شرح کامل حادثه:</label>
+          <p id="detail-description" class="input-field p-2 rounded-lg min-h-[100px]"></p>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-300">درجه ریسک:</label>
+            <p id="detail-priority" class="input-field p-2 rounded-lg text-center"></p>
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-300">وضعیت:</label>
+            <p id="detail-status" class="input-field p-2 rounded-lg text-center"></p>
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-300">تاریخ و ساعت ثبت:</label>
+            <p id="detail-date" class="input-field p-2 rounded-lg text-center"></p>
+          </div>
+        </div>
+        <div id="action-section" class="hidden">
+          <label class="block mb-2 text-sm font-medium text-gray-300">تاریخچه اقدامات:</label>
+          <div id="action-history" class="max-h-60 overflow-y-auto mt-2 space-y-2"></div>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button type="button" id="closeDetailsModalBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">بستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Action -->
+  <div id="addActionModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-2xl p-6 rounded-xl shadow-lg m-4">
+      <h3 class="text-xl font-bold mb-4 text-white">ثبت اقدام جدید</h3>
+      <form id="addActionForm">
+        <input type="hidden" id="action-incident-id" />
+        <div class="space-y-4">
+          <div>
+            <label for="actionDescription" class="block mb-2 text-sm font-medium text-gray-300">شرح اقدام</label>
+            <textarea id="actionDescription" rows="4" class="input-field w-full p-2.5 rounded-lg" placeholder="اقدام انجام‌شده را شرح دهید..." required></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="actionDate" class="block mb-2 text-sm font-medium text-gray-300">تاریخ اقدام (شمسی)</label>
+              <input type="text" id="actionDate" class="input-field w-full p-2.5 rounded-lg" required autocomplete="off" />
+            </div>
+            <div>
+              <label for="actionStatus" class="block mb-2 text-sm font-medium text-gray-300">تغییر وضعیت (اختیاری)</label>
+              <select id="actionStatus" class="input-field w-full p-2.5 rounded-lg">
+                <option value="">بدون تغییر وضعیت</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="cancelAddActionBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-success text-white font-bold py-2 px-4 rounded-lg">ثبت اقدام</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Config Item -->
+  <div id="configItemModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-md p-6 rounded-xl shadow-lg m-4">
+      <h3 id="configModalTitle" class="text-xl font-bold mb-4 text-white">افزودن آیتم جدید</h3>
+      <form id="configItemForm">
+        <input type="hidden" id="config-type" />
+        <input type="hidden" id="config-index" value="-1" />
+        <div class="space-y-4">
+          <div>
+            <label for="configValue" class="block mb-2 text-sm font-medium text-gray-300">مقدار</label>
+            <input type="text" id="configValue" class="input-field w-full p-2.5 rounded-lg" required />
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="cancelConfigBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Management -->
+  <div id="userManagementPage" class="p-6 hidden system-admin-only admin-only">
+    <h2 class="text-2xl font-semibold text-white mb-4">
+      <i class="fas fa-users ml-2"></i>مدیریت کاربران
+    </h2>
+    <div class="mb-4 text-right">
+      <button id="addUserBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">
+        <i class="fas fa-plus ml-2"></i>افزودن کاربر جدید
+      </button>
+    </div>
+    <div class="card rounded-xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>نام کاربری</th>
+              <th>نام کامل</th>
+              <th>پست سازمانی</th>
+              <th>سطح دسترسی</th>
+              <th>وضعیت</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div id="userModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-md p-6 rounded-xl shadow-lg m-4">
+      <h3 id="userModalTitle" class="text-xl font-bold mb-4 text-white">افزودن کاربر جدید</h3>
+      <form id="userForm" autocomplete="on">
+        <input type="hidden" id="user-id" value="" />
+        <div class="space-y-4">
+          <div>
+            <label for="user-username" class="block mb-2 text-sm font-medium text-gray-300">نام کاربری</label>
+            <input type="text" id="user-username" class="input-field w-full p-2.5 rounded-lg" autocomplete="username" required />
+          </div>
+          <div>
+            <label for="user-fullname" class="block mb-2 text-sm font-medium text-gray-300">نام کامل</label>
+            <input type="text" id="user-fullname" class="input-field w-full p-2.5 rounded-lg" autocomplete="name" required />
+          </div>
+          <div>
+            <label for="user-position" class="block mb-2 text-sm font-medium text-gray-300">پست سازمانی</label>
+            <input type="text" id="user-position" class="input-field w-full p-2.5 rounded-lg" autocomplete="organization-title" required />
+          </div>
+          <div>
+            <label for="user-role" class="block mb-2 text-sm font-medium text-gray-300">سطح دسترسی</label>
+            <select id="user-role" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="user">کاربر عادی</option>
+              <option value="defense-admin">مدیر پدافند</option>
+              <option value="system-admin">ادمین سیستم</option>
+            </select>
+          </div>
+          <div>
+            <label for="user-password" class="block mb-2 text-sm font-medium text-gray-300">رمز عبور</label>
+            <input type="password" id="user-password" autocomplete="new-password" class="input-field w-full p-2.5 rounded-lg" required />
+          </div>
+          <div>
+            <label for="user-status" class="block mb-2 text-sm font-medium text-gray-300">وضعیت</label>
+            <select id="user-status" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="active">فعال</option>
+              <option value="inactive">غیرفعال</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="cancelUserBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resource Modal -->
+  <div id="resourceModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-md p-6 rounded-xl shadow-lg m-4">
+      <h3 id="resourceModalTitle" class="text-xl font-bold mb-4 text-white">افزودن فایل آموزشی</h3>
+      <form id="resourceForm" enctype="multipart/form-data" autocomplete="on">
+        <input type="hidden" id="resource-id" value="" />
+        <div class="space-y-4">
+          <div>
+            <label for="resource-title" class="block mb-2 text-sm font-medium text-gray-300">عنوان</label>
+            <input type="text" id="resource-title" name="title" class="input-field w-full p-2.5 rounded-lg" required />
+          </div>
+
+          <div>
+            <label for="resource-category" class="block mb-2 text-sm font-medium text-gray-300">نوع فایل</label>
+            <!-- مقدار این سلکت در app.js از /api/resources/types پر می‌شود -->
+            <select id="resource-category" class="input-field w-full p-2.5 rounded-lg" required>
+              <option value="">انتخاب کنید…</option>
+            </select>
+          </div>
+
+          <!-- دامنه (سایبری/پدافندی) -->
+          <div class="mt-3" id="resource-domain-wrap">
+            <label for="resource-domain" class="block mb-2 text-sm font-medium text-gray-300">
+              دامنه
+            </label>
+            <select id="resource-domain" class="input-field w-full p-2.5 rounded-lg">
+              <option value="cyber">سایبری</option>
+              <option value="physical">پدافندی</option>
+            </select>
+            <p class="text-xs text-gray-400 mt-1">
+            </p>
+          </div>
+
+          <div>
+            <label for="resource-file" class="block mb-2 text-sm font-medium text-gray-300">فایل</label>
+            <input
+              type="file"
+              id="resource-file"
+              name="file"
+              class="text-gray-300"
+              accept=".pdf,.mp4,.mkv,.avi,.mov,.wmv,.webm,.ppt,.pptx,.pps,.ppsx,.doc,.docx,.rtf,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.svg,.webp"
+            />
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="cancelResourceBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile / Change My Password Modal -->
+  <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-md p-6 rounded-xl shadow-lg m-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-white">تغییر رمز عبور</h3>
+        <button id="closeProfileBtn" class="text-gray-400 hover:text-white" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="myPassForm" class="space-y-4" autocomplete="on">
+        <input type="text" name="username" autocomplete="username" class="hidden" tabindex="-1" aria-hidden="true">
+        <div>
+          <label for="my-current-password" class="block mb-2 text-sm font-medium text-gray-300">رمز فعلی</label>
+          <input type="password" id="my-current-password" autocomplete="current-password" class="input-field w-full p-2.5 rounded-lg" required />
+        </div>
+        <div>
+          <label for="my-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
+          <input type="password" id="my-new-password" autocomplete="new-password" class="input-field w-full p-2.5 rounded-lg" required />
+        </div>
+        <div>
+          <label for="my-new-password-2" class="block mb-2 text-sm font-medium text-gray-300">تکرار رمز جدید</label>
+          <input type="password" id="my-new-password-2" autocomplete="new-password" class="input-field w-full p-2.5 rounded-lg" required />
+        </div>
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="closeProfileBtn2" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
+          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">تغییر رمز</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content w-full max-w-sm p-8 rounded-xl shadow-lg m-4 text-center">
+      <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+      <h3 id="successMessage" class="text-xl font-bold mb-4 text-white"></h3>
+      <button id="closeSuccessModalBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">باشه</button>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div id="errorModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+    <div class="modal-content و-full max-w-sm p-8 rounded-xl shadow-lg m-4 text-center">
+      <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+      <h3 id="errorMessage" class="text-xl font-bold mb-4 text-white"></h3>
+      <button id="closeErrorModalBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">باشه</button>
+    </div>
+  </div>
+
+  <!-- ========== Pre-login Change Password Modal ========== -->
+  <div id="preloginModal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden">
+    <div class="modal-content w-full max-w-md p-6 rounded-xl shadow-lg m-4 bg-gray-800">
+      <h3 class="text-xl font-bold mb-4 text-white">تغییر رمز عبور</h3>
+
+      <!-- ✅ فرم استاندارد برای رفع اخطار Chrome -->
+      <form id="preloginPassForm" class="space-y-4" autocomplete="on" novalidate>
+        <div>
+          <label for="prelogin-username" class="block mb-2 text-sm font-medium text-gray-300">نام کاربری</label>
+          <input type="text" id="prelogin-username" name="username"
+                 class="input-field w-full p-2.5 rounded-lg"
+                 autocomplete="username" required />
+        </div>
+        <div>
+          <label for="prelogin-current-password" class="block mb-2 text-sm font-medium text-gray-300">رمز فعلی</label>
+          <input type="password" id="prelogin-current-password" name="current_password"
+                 class="input-field w-full p-2.5 rounded-lg"
+                 autocomplete="current-password" required />
+        </div>
+        <div>
+          <label for="prelogin-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
+          <input type="password" id="prelogin-new-password" name="new_password"
+                 class="input-field w-full p-2.5 rounded-lg"
+                 autocomplete="new-password" required />
+        </div>
+        <div>
+          <label for="prelogin-new-password-2" class="block mb-2 text-sm font-medium text-gray-300">تکرار رمز جدید</label>
+          <input type="password" id="prelogin-new-password-2" name="new_password_2"
+                 class="input-field w-full p-2.5 rounded-lg"
+                 autocomplete="new-password" required />
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
+          <button type="button" id="preloginCancelBtn"
+                  class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">
+            انصراف
+          </button>
+          <!-- ✅ دکمهٔ submit واقعی -->
+          <button type="submit" id="preloginSubmitBtn"
+                  class="btn-primary text-white font-bold py-2 px-4 rounded-lg">
+            تغییر رمز و ورود
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Libs (لوکال) -->
+  <script src="./vendor/jalaali/jalaali.min.js"></script>
+  <script src="./vendor/echarts/echarts.min.js"></script>
+  <script src="./vendor/xlsx/xlsx.full.min.js"></script>
+
+  <!-- app.js (ESM) -->
+  <script type="module" src="./js/app.js"></script>
+
+  <!-- امنیت لینک‌های خارجی در کارت منابع -->
+  <script>
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('a[target="_blank"]');
+      if (a && !a.hasAttribute('rel')) a.setAttribute('rel', 'noopener');
+    });
+  </script>
+</body>
+</html>
