@@ -650,3 +650,8 @@ ul.reset, .base-data-card ul, #resourcesContainer ul, .card ul, .no-bullets ul {
   touch-action: pan-y;
   overscroll-behavior: contain;
 }
+
+
+html, body {
+  font-family: 'Vazirmatn', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
