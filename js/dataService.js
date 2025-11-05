@@ -1,8 +1,15 @@
 // public/js/dataService.js
+// 🔗 وقتی فرانت روی GitHub Pages است، باید مستقیماً به بک‌اند Render وصل شویم.
+const BACKEND_RENDER_URL = "https://security-incident-backend.onrender.com";
+
 const RUNTIME_API_BASE =
   (typeof window !== "undefined" && window.API_BASE) ||
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE) ||
-  "/api";
+  // اگر روی GitHub Pages هستیم → مستقیم به بک‌اند Render
+  ((typeof window !== "undefined" && /\.github\.io$/.test(window.location.hostname))
+    ? BACKEND_RENDER_URL
+    : "/api"
+  );
 
 class DataService {
   constructor() {
@@ -241,7 +248,7 @@ class DataService {
         s = s.replace(/[۰-۹]/g, d => String(fa.indexOf(d)))
              .replace(/[٠-٩]/g, d => String(ar.indexOf(d)))
              .replace(/[\/\.]/g, "-");
-        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        const m = s.match(/^(\d{4})-(\د{1,2})-(\d{1,2})$/); // ← همان الگوی اصلی شما
         if (m) s = `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
         body.action_date_jalali = s;
       }
@@ -283,8 +290,8 @@ class DataService {
       s = s.replace(/[۰-۹]/g, d => String(fa.indexOf(d)))
            .replace(/[٠-٩]/g, d => String(ar.indexOf(d)))
            .replace(/[\/\.]/g, "-");
-      const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); // ← fix \d
-      if (m) s = `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+      const m = s.match(/^(\d{4})-(\د{1,2})-(\d{1,2})$/); // ← همان الگوی شما
+      if (m) s = `${م[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
       body.incident_date_jalali = s;
     }
 
