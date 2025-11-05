@@ -2,6 +2,7 @@
 import api from "./dataService.js";
 import { mountDashboard, updateDashboard, updateDashboardTheme } from "./dashboard.js"; // داشبورد UI جدا
 let _dashboardRef = null;
+const API_BASE = (window.API_BASE || 'https://security-incident-backend.onrender.com/api').replace(/\/+$/, '');
 
 /* ======================= Utils: Role ======================= */
 function normalizeRole(r){
@@ -1942,8 +1943,8 @@ function renderResources(items = []){
     const isPhysical = (it.domain ? it.domain === 'physical' : _isPhysicalResource(it));
 
     // مسیرهای سرور (محافظت‌شده با توکن)
-    const viewUrl     = `/api/resources/view/${encodeURIComponent(it.id)}`;
-    const downloadUrl = `/api/resources/download/${encodeURIComponent(it.id)}`;
+    const viewUrl     = `${API_BASE}/resources/view/${encodeURIComponent(it.id)}`;
+const downloadUrl = `${API_BASE}/resources/download/${encodeURIComponent(it.id)}`;
 
     // کارت
     const card = document.createElement("div");
