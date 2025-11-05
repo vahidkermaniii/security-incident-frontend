@@ -1,11 +1,8 @@
 /* public/main.css */
 
 /* ===================== Local Vazirmatn (TTF) ===================== */
-/* فایل‌های زیر باید در public/fonts/ قرار بگیرند:
-   Vazirmatn-Thin.ttf, Vazirmatn-ExtraLight.ttf, Vazirmatn-Light.ttf,
-   Vazirmatn-Regular.ttf, Vazirmatn-Medium.ttf, Vazirmatn-SemiBold.ttf,
-   Vazirmatn-Bold.ttf, Vazirmatn-ExtraBold.ttf, Vazirmatn-Black.ttf
-*/
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+
 @font-face {
   font-family: 'Vazirmatn';
   src: url('/fonts/Vazirmatn-Thin.ttf') format('truetype');
