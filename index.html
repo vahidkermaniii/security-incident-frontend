@@ -5,16 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>سامانه ثبت حوادث امنیتی</title>
 
-  <!-- Tailwind (لوکال) -->
-  <link rel="stylesheet" href="./vendor/tailwind/tailwind.css">
+  <!-- آدرس API برای اتصال فرانت به بک‌اند Render -->
+  <script>
+    window.API_BASE = "https://security-incident-backend.onrender.com/api";
+  </script>
 
-  <!-- Font Awesome (لوکال) -->
-  <link rel="stylesheet" href="./vendor/fontawesome/css/all.min.css">
+  <!-- TailwindCSS (CDN) -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Persian Datepicker (لوکال) -->
-  <link rel="stylesheet" href="./vendor/persian-datepicker/persian-datepicker.min.css" />
+  <!-- Font Awesome (CDN) -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Main Styles -->
+  <!-- Persian Datepicker (CDN) -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+
+  <!-- استایل‌های خودت -->
   <link rel="stylesheet" href="./main.css" />
 
   <!-- اطمینان از ارتفاع نمودارها -->
@@ -27,19 +37,12 @@
     /* فیلتر منابع */
     .resource-filter.active { background-color: rgb(37 99 235); color: #fff; }
   </style>
-
-  <!-- آدرس API برای اتصال فرانت به بک‌اند Render (بدون تغییر بقیه کد) -->
-  <script>
-    window.API_BASE = window.API_BASE || "https://security-incident-backend.onrender.com/api";
-  </script>
 </head>
 <body class="antialiased">
-  <!-- jQuery (لوکال برای PersianDatepicker) -->
-  <script src="./vendor/jquery/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-
-  <!-- Persian Date core + Datepicker (لوکال) -->
-  <script src="./vendor/persian-date/persian-date.js"></script>
-  <script src="./vendor/persian-datepicker/persian-datepicker.min.js"></script>
+  <!-- jQuery + Persian Date libs (CDN) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
 
   <!-- Login View -->
   <div id="loginView" class="flex items-center justify-center min-h-screen">
@@ -126,27 +129,27 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
-          <img src="./assets/img/shield.png" class="mx-auto mb-4" alt="گزارش کوچک‌ترین حوادث" />
+          <img src="./assets/Img/shield.png" class="mx-auto mb-4" alt="گزارش کوچک‌ترین حوادث" />
           <h3 class="font-bold text-white mb-2">گزارش حتی کوچک‌ترین حوادث</h3>
           <p class="text-gray-300 text-sm">هر حادثه کوچک امنیتی می‌تواند نشانه یک تهدید بزرگ باشد.</p>
         </div>
         <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
-          <img src="./assets/img/clock.png" class="mx-auto mb-4" alt="سرعت گزارش‌دهی" />
+          <img src="./assets/Img/clock.png" class="mx-auto mb-4" alt="سرعت گزارش‌دهی" />
           <h3 class="font-bold text-white mb-2">سرعت گزارش‌دهی مهم است</h3>
           <p class="text-gray-300 text-sm">هرچه سریع‌تر حادثه را گزارش کنید، امکان مهار و کاهش خسارت بیشتر خواهد بود.</p>
         </div>
         <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
-          <img src="./assets/img/teamwork.png" class="mx-auto mb-4" alt="مسئولیت گزارش" />
+          <img src="./assets/Img/teamwork.png" class="mx-auto mb-4" alt="مسئولیت گزارش" />
           <h3 class="font-bold text-white mb-2">گزارش وظیفه است نه مقصر بودن</h3>
           <p class="text-gray-300 text-sm">هدف ارتقاء امنیت است، نه پیدا کردن مقصر.</p>
         </div>
         <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
-          <img src="./assets/img/lock.png" class="mx-auto mb-4" alt="مسئولیت امنیت" />
+          <img src="./assets/Img/lock.png" class="mx-auto mb-4" alt="مسئولیت امنیت" />
           <h3 class="font-bold text-white mb-2">امنیت اطلاعات مسئولیت همه است</h3>
           <p class="text-gray-300 text-sm">همه‌ی کارکنان در این زمینه مسئول هستند.</p>
         </div>
         <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
-          <img src="./assets/img/combo-chart.png" class="mx-auto mb-4" alt="آمار دقیق" />
+          <img src="./assets/Img/combo-chart.png" class="mx-auto mb-4" alt="آمار دقیق" />
           <h3 class="font-bold text-white mb-2">آمار دقیق = پیشگیری بهتر</h3>
           <p class="text-gray-300 text-sm">گزارش دقیق، داده‌های لازم برای تحلیل را فراهم می‌کند.</p>
         </div>
@@ -243,7 +246,7 @@
           </div>
           <div id="locationFilterContainer">
             <label for="locationFilter" class="block mb-2 text-sm font-medium text-gray-300">محل وقوع</label>
-            <select id="locationFilter" class="input-field w-full p-2 rounded-lg">
+            <select id="locationFilter" class="input-field w-full پ-2 rounded-lg">
               <option value="">همه مکان‌ها</option>
             </select>
           </div>
@@ -612,7 +615,7 @@
 
   <!-- Incident Details -->
   <div id="incidentDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
-    <div class="modal-content w-full max-w-2xl p-6 rounded-xl shadow-lg م-4">
+    <div class="modal-content w-full max-w-2xl p-6 rounded-xl shadow-lg m-4">
       <h3 class="text-xl font-bold mb-4 text-white">جزئیات حادثه امنیتی</h3>
       <div class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
@@ -886,7 +889,7 @@
 
   <!-- Error Modal -->
   <div id="errorModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
-    <div class="modal-content و-full max-w-sm p-8 rounded-xl shadow-lg m-4 text-center">
+    <div class="modal-content w-full max-w-sm p-8 rounded-xl shadow-lg m-4 text-center">
       <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
       <h3 id="errorMessage" class="text-xl font-bold mb-4 text-white"></h3>
       <button id="closeErrorModalBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">باشه</button>
@@ -921,7 +924,7 @@
         <div>
           <label for="prelogin-new-password-2" class="block mb-2 text-sm font-medium text-gray-300">تکرار رمز جدید</label>
           <input type="password" id="prelogin-new-password-2" name="new_password_2"
-                 class="input-field w-full p-2.5 rounded-lg"
+                 class="input-field w-full پ-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
 
@@ -940,12 +943,12 @@
     </div>
   </div>
 
-  <!-- Libs (لوکال) -->
-  <script src="./vendor/jalaali/jalaali.min.js"></script>
-  <script src="./vendor/echarts/echarts.min.js"></script>
-  <script src="./vendor/xlsx/xlsx.full.min.js"></script>
+  <!-- کتابخانه‌ها (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.2.6/dist/jalaali.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- app.js (ESM) -->
+  <!-- اپ خودت (ESM) -->
   <script type="module" src="./js/app.js"></script>
 
   <!-- امنیت لینک‌های خارجی در کارت منابع -->
