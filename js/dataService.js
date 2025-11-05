@@ -1,6 +1,7 @@
 // public/js/dataService.js
-// 🔗 وقتی فرانت روی GitHub Pages است، باید مستقیماً به بک‌اند Render وصل شویم.
-const BACKEND_RENDER_URL = "https://security-incident-backend.onrender.com";
+
+// 🔗 وقتی فرانت روی GitHub Pages است، باید مستقیماً به بک‌اند Render (مسیر /api) وصل شویم.
+const BACKEND_RENDER_URL = "https://security-incident-backend.onrender.com/api";
 
 const RUNTIME_API_BASE =
   (typeof window !== "undefined" && window.API_BASE) ||
@@ -13,8 +14,9 @@ const RUNTIME_API_BASE =
 
 class DataService {
   constructor() {
-    this.API_BASE = RUNTIME_API_BASE.replace(/\/+$/, "");
-    this.token = localStorage.getItem("accessToken") || "";
+    this.API_BASE = String(RUNTIME_API_BASE || "/api").replace(/\/+$/, "");
+    this.token = "";
+    try { this.token = localStorage.getItem("accessToken") || ""; } catch {}
   }
 
   setToken(t) {
@@ -34,6 +36,9 @@ class DataService {
   }
 
   async _handle(res) {
+    // 204 (No Content)
+    if (res.status === 204) return null;
+
     let data = null, text = null;
     try { data = await res.json(); } catch { try { text = await res.text(); } catch {} }
 
@@ -248,7 +253,7 @@ class DataService {
         s = s.replace(/[۰-۹]/g, d => String(fa.indexOf(d)))
              .replace(/[٠-٩]/g, d => String(ar.indexOf(d)))
              .replace(/[\/\.]/g, "-");
-        const m = s.match(/^(\d{4})-(\د{1,2})-(\d{1,2})$/); // ← همان الگوی اصلی شما
+        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); // ← درست: \d
         if (m) s = `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
         body.action_date_jalali = s;
       }
@@ -290,8 +295,8 @@ class DataService {
       s = s.replace(/[۰-۹]/g, d => String(fa.indexOf(d)))
            .replace(/[٠-٩]/g, d => String(ar.indexOf(d)))
            .replace(/[\/\.]/g, "-");
-      const m = s.match(/^(\d{4})-(\د{1,2})-(\d{1,2})$/); // ← همان الگوی شما
-      if (m) s = `${م[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+      const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); // ← درست: \d
+      if (m) s = `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
       body.incident_date_jalali = s;
     }
 
