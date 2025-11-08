@@ -1982,14 +1982,34 @@ const downloadUrl = `${API_BASE}/resources/download/${encodeURIComponent(it.id)}
     const canDelete = isSystemAdmin() || (isDefenseAdmin() && isPhysical);
 
     if (canEdit || canDelete) {
-      const tools = document.createElement("div");
-      tools.className = "mt-2 flex justify-center gap-2";
-      tools.innerHTML = `
-        ${ canEdit   ? `<button class="btn-secondary px-3 py-2 rounded edit-res" data-id="${it.id}">ویرایش</button>` : "" }
-        ${ canDelete ? `<button class="btn-danger px-3 py-2 rounded del-res"  data-id="${it.id}">حذف</button>`   : "" }
-      `;
-      wrap.appendChild(tools);
+  const tools = document.createElement("div");
+  tools.className = "mt-2 flex justify-center gap-2";
+  tools.innerHTML = `
+    ${ canEdit   ? `<button class="btn-secondary px-3 py-2 rounded edit-res" data-id="${it.id}">ویرایش</button>` : "" }
+    ${ canDelete ? `<button class="btn-danger px-3 py-2 rounded del-res"  data-id="${it.id}">حذف</button>`   : "" }
+  `;
+  wrap.appendChild(tools);
+
+  // ✅ این دو listener را همین‌جا اضافه کن:
+  tools.querySelector(".edit-res")?.addEventListener("click", () => {
+    openEditResourceModal(it.id); // باز شدن مودال ویرایش
+  });
+
+  tools.querySelector(".del-res")?.addEventListener("click", async () => {
+    if (!confirm("این فایل آموزشی حذف شود؟")) return;
+    try {
+      const r = await api.deleteResource(it.id);
+      if (r?.ok || r?.success) {
+        showSuccess("فایل حذف شد.");
+        await loadResources();
+      } else {
+        showError(r?.message || "حذف با خطا مواجه شد.");
+      }
+    } catch (e) {
+      if (!handleAuthError(e)) showError(e?.message || "حذف با خطا مواجه شد.");
     }
+  });
+}
 
     resourcesContainer.appendChild(wrap);
 
