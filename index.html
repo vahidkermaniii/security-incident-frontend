@@ -14,7 +14,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="icon" href="./favicon.ico" />
+  <link rel="icon" href="./favicon.ico" />
   
   <!-- Font Awesome (CDN) -->
   <link rel="stylesheet"
@@ -51,24 +51,29 @@
       <div class="text-center">
         <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
         <h2 class="mt-4 text-3xl font-bold text-white">سامانه ثبت حوادث امنیتی</h2>
-        <p class="mt-2 text-sm text-gray-400">برای ورود، از اطلاعات کاربری خود استفاده کنید.</p>
+        <!-- ✅ تغییر متن راهنما به متن اعتبار -->
+        <p class="mt-2 text-sm text-gray-400">طراحی و پیاده‌سازی: <strong>مجید نداف کرمانی</strong> — پاییز <strong>۱۴۰۴</strong></p>
       </div>
       <form id="loginForm" class="space-y-6" autocomplete="on">
         <div>
           <label for="username" class="block mb-2 text-sm font-medium text-gray-300">نام کاربری</label>
           <input type="text" id="username" name="username" autocomplete="username"
-                 class="input-field w-full p-2.5 rounded-lg" placeholder="username" required />
+                 class="input-field w-full p-2.5 rounded-lg" placeholder="username" required
+                 value="demo" />
         </div>
         <div>
           <label for="password" class="block mb-2 text-sm font-medium text-gray-300">گذرواژه</label>
           <input type="password" id="password" name="password" autocomplete="current-password"
-                 class="input-field w-full p-2.5 rounded-lg" placeholder="********" required />
+                 class="input-field w-full p-2.5 rounded-lg" placeholder="********" required
+                 value="Demo1234!" />
         </div>
         <div id="loginError" class="text-red-400 text-sm hidden">نام کاربری یا گذرواژه اشتباه است.</div>
         <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-white font-bold btn-primary">
           <i class="fas fa-sign-in-alt ml-2"></i>ورود به سامانه
         </button>
       </form>
+      <!-- ✅ فوتر اعتبار در صفحه لاگین -->
+      <p class="text-xs text-gray-400 text-center mt-4">تهیه و توسعه: <strong>مجید نداف کرمانی</strong> — پاییز <strong>۱۴۰۴</strong></p>
     </div>
   </div>
 
@@ -247,7 +252,7 @@
           </div>
           <div id="locationFilterContainer">
             <label for="locationFilter" class="block mb-2 text-sm font-medium text-gray-300">محل وقوع</label>
-            <select id="locationFilter" class="input-field w-full پ-2 rounded-lg">
+            <select id="locationFilter" class="input-field w-full p-2 rounded-lg">
               <option value="">همه مکان‌ها</option>
             </select>
           </div>
@@ -449,7 +454,7 @@
           <div id="dbPending" class="text-2xl font-bold text-white mt-1">0</div>
         </div>
 
-        <div class="card p-4 rounded-lg">
+        <div class="card پ-4 rounded-lg">
           <div class="text-sm text-gray-400">حل‌شده</div>
           <div id="dbClosed" class="text-2xl font-bold text-white mt-1">0</div>
         </div>
@@ -555,6 +560,11 @@
     <div id="themeToggle" class="theme-toggle" aria-label="تغییر تم">
       <i class="fas fa-moon text-yellow-400"></i>
     </div>
+
+    <!-- ✅ فوتر سراسری سامانه در همه صفحات -->
+    <footer id="appFooter" class="bg-gray-900 text-gray-400 text-center py-3 mt-6">
+      تهیه و توسعه: <strong>مجید نداف کرمانی</strong> — پاییز <strong>۱۴۰۴</strong>
+    </footer>
   </div> <!-- /#mainContent -->
 
   <!-- Modals -->
@@ -713,7 +723,7 @@
         </div>
         <div class="mt-6 flex justify-end space-x-2 space-x-reverse">
           <button type="button" id="cancelConfigBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">انصراف</button>
-          <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ذخیره</button>
+            <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">ذخیره</button>
         </div>
       </form>
     </div>
@@ -919,7 +929,7 @@
         <div>
           <label for="prelogin-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
           <input type="password" id="prelogin-new-password" name="new_password"
-                 class="input-field w-full p-2.5 rounded-lg"
+                 class="input-field w-full پ-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
         <div>
