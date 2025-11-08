@@ -655,3 +655,70 @@ ul.reset, .base-data-card ul, #resourcesContainer ul, .card ul, .no-bullets ul {
 html, body {
   font-family: 'Vazirmatn', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
+/* =========================
+   Pager bar — better contrast (Dark & Light)
+   ========================= */
+.table-pager,
+#userIncPager,
+#allIncPager {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: .75rem;
+  padding: .5rem .75rem;
+}
+
+.table-pager .pager-inner,
+#userIncPager .pager-inner,
+#allIncPager .pager-inner {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pager-actions button,
+#userIncPager .pager-actions button,
+#allIncPager .pager-actions button {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: .5rem;
+  padding: .35rem .6rem;
+  min-width: 2.1rem;
+  line-height: 1;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.pager-actions button:hover:not(:disabled) {
+  background: rgba(59,130,246,.12);   /* آبیِ ملایم در دارک */
+  border-color: var(--accent-color);
+}
+
+.pager-actions button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* متن اطلاعات صفحه */
+.pager-info {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Light theme tweaks */
+.light-theme .table-pager,
+.light-theme #userIncPager,
+.light-theme #allIncPager {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+.light-theme .pager-actions button {
+  background: #fff;
+  color: #111827;
+  border-color: #e5e7eb;
+}
+.light-theme .pager-actions button:hover:not(:disabled) {
+  background: rgba(37,99,235,.08);
+  border-color: #2563eb;
+}
