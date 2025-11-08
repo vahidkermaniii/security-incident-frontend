@@ -722,3 +722,10 @@ html, body {
   background: rgba(37,99,235,.08);
   border-color: #2563eb;
 }
+
+/* Override رنگ فوتر در تم روشن وقتی هنوز کلاس‌های Tailwind روی footer هست */
+.light-theme footer{
+  background: #ffffffcc !important;   /* سفید نیمه‌شفاف */
+  color: #374151 !important;          /* متن تیره خوانا */
+  border-top: 1px solid #e5e7eb !important;
+}
