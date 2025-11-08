@@ -51,10 +51,7 @@
       <div class="text-center">
         <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
         <h2 class="mt-4 text-3xl font-bold text-white">سامانه ثبت حوادث امنیتی</h2>
-        <!-- ⬇️ همین خط نسبت به رفرنس شما تغییر کرده -->
-        <p class="mt-2 text-sm text-gray-400">
-          جهت ورود آزمایشی: <strong>نام کاربری: <span dir="ltr">demo</span></strong> — <strong>گذرواژه: <span dir="ltr">Demo1234!</span></strong>
-        </p>
+        <p class="mt-2 text-sm text-gray-400">برای ورود، از اطلاعات کاربری خود استفاده کنید.</p>
       </div>
       <form id="loginForm" class="space-y-6" autocomplete="on">
         <div>
@@ -152,7 +149,7 @@
           <h3 class="font-bold text-white mb-2">امنیت اطلاعات مسئولیت همه است</h3>
           <p class="text-gray-300 text-sm">همه‌ی کارکنان در این زمینه مسئول هستند.</p>
         </div>
-        <div class="card پ-4 rounded-lg text-center hover:shadow-lg transition-shadow">
+        <div class="card p-4 rounded-lg text-center hover:shadow-lg transition-shadow">
           <img src="./assets/Img/combo-chart.png" class="mx-auto mb-4" alt="آمار دقیق" />
           <h3 class="font-bold text-white mb-2">آمار دقیق = پیشگیری بهتر</h3>
           <p class="text-gray-300 text-sm">گزارش دقیق، داده‌های لازم برای تحلیل را فراهم می‌کند.</p>
@@ -162,7 +159,7 @@
 
     <!-- My Incidents -->
     <div id="incidentsPage" class="p-6 hidden relative">
-      <div class="flex items-center justify بین mb-4">
+      <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold text-white">گزارش‌های من</h2>
         <button id="exportMyIncXlsx" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg text-sm">
           <i class="fas fa-file-excel ml-2"></i>خروجی اکسل
@@ -478,70 +475,70 @@
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">وضعیت‌ها در ۴ هفته اخیر</h3>
         <div class="chart-box">
           <div id="chartWeeks" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">محل‌های وقوع (سایبری/پدافند)</h3>
         <div class="chart-box">
           <div id="chartLocations" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">تفکیک درجه ریسک</h3>
         <div class="chart-box chart-box--short">
           <div id="chartPriority" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">روند ۳۰ روز اخیر برحسب دسته‌بندی</h3>
         <div class="chart-box chart-box--tall">
           <div id="chartTrendByCat30" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">تجمعی ثبت در ۳۰ روز اخیر</h3>
         <div class="chart-box">
           <div id="chartCumulative30" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">پارِتو محل‌های وقوع</h3>
         <div class="chart-box">
           <div id="chartParetoLocations" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">قیف وضعیت‌ها</h3>
         <div class="chart-box chart-box--short">
           <div id="chartStatusFunnel" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">توزیع زمان تا اولین اقدام</h3>
         <div class="chart-box">
           <div id="chartFirstActionHist" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">توزیع زمان تا حل‌شدن</h3>
         <div class="chart-box">
           <div id="chartResolveHist" class="echart"></div>
         </div>
       </div>
 
-      <div class="card پ-4 rounded-lg mt-6">
+      <div class="card p-4 rounded-lg mt-6">
         <h3 class="text-lg font-semibold text-white mb-2">چگالی ثبت در ۹۰ روز اخیر (تقویمی)</h3>
         <div class="chart-box">
           <div id="chartCalendarHeat" class="echart"></div>
@@ -634,28 +631,28 @@
         </div>
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-300">عنوان حادثه:</label>
-          <p id="detail-title" class="input-field پ-2 rounded-lg"></p>
+          <p id="detail-title" class="input-field p-2 rounded-lg"></p>
         </div>
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-300">محل وقوع حادثه:</label>
-          <p id="detail-location" class="input-field پ-2 rounded-lg"></p>
+          <p id="detail-location" class="input-field p-2 rounded-lg"></p>
         </div>
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-300">شرح کامل حادثه:</label>
-          <p id="detail-description" class="input-field پ-2 rounded-lg min-h-[100px]"></p>
+          <p id="detail-description" class="input-field p-2 rounded-lg min-h-[100px]"></p>
         </div>
         <div class="grid grid-cols-3 gap-4">
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-300">درجه ریسک:</label>
-            <p id="detail-priority" class="input-field پ-2 rounded-lg text-center"></p>
+            <p id="detail-priority" class="input-field p-2 rounded-lg text-center"></p>
           </div>
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-300">وضعیت:</label>
-            <p id="detail-status" class="input-field پ-2 rounded-lg text-center"></p>
+            <p id="detail-status" class="input-field p-2 rounded-lg text-center"></p>
           </div>
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-300">تاریخ و ساعت ثبت:</label>
-            <p id="detail-date" class="input-field پ-2 rounded-lg text-center"></p>
+            <p id="detail-date" class="input-field p-2 rounded-lg text-center"></p>
           </div>
         </div>
         <div id="action-section" class="hidden">
@@ -910,19 +907,19 @@
         <div>
           <label for="prelogin-username" class="block mb-2 text-sm font-medium text-gray-300">نام کاربری</label>
           <input type="text" id="prelogin-username" name="username"
-                 class="input-field و-full پ-2.5 rounded-lg"
+                 class="input-field w-full p-2.5 rounded-lg"
                  autocomplete="username" required />
         </div>
         <div>
           <label for="prelogin-current-password" class="block mb-2 text-sm font-medium text-gray-300">رمز فعلی</label>
           <input type="password" id="prelogin-current-password" name="current_password"
-                 class="input-field و-full پ-2.5 rounded-lg"
+                 class="input-field w-full p-2.5 rounded-lg"
                  autocomplete="current-password" required />
         </div>
         <div>
           <label for="prelogin-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
           <input type="password" id="prelogin-new-password" name="new_password"
-                 class="input-field و-full پ-2.5 rounded-lg"
+                 class="input-field w-full p-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
         <div>
