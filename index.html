@@ -14,7 +14,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="icon" href="./favicon.ico" />
+  <link rel="icon" href="./favicon.ico" />
   
   <!-- Font Awesome (CDN) -->
   <link rel="stylesheet"
@@ -68,6 +68,20 @@
         <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-white font-bold btn-primary">
           <i class="fas fa-sign-in-alt ml-2"></i>ورود به سامانه
         </button>
+
+        <!-- ✅ راهنمای ورود دمو -->
+        <div class="mt-4 text-xs text-gray-300 bg-gray-700 bg-opacity-50 rounded-md p-3 leading-6">
+          <span class="font-bold">نام کاربری آزمایشی:</span>
+          <code style="direction:ltr;unicode-bidi:bidi-override">demo</code>
+          <span class="mx-2">|</span>
+          <span class="font-bold">رمز عبور:</span>
+          <code style="direction:ltr;unicode-bidi:bidi-override">Demo1234!</code>
+        </div>
+
+        <!-- ✅ فوتر مخصوص کارت لاگین -->
+        <div class="pt-2 mt-4 border-t border-gray-700 text-center text-xs text-gray-400">
+          تهیه شده توسط مجید نداف کرمانی — پاییز 1404
+        </div>
       </form>
     </div>
   </div>
@@ -919,7 +933,7 @@
         <div>
           <label for="prelogin-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
           <input type="password" id="prelogin-new-password" name="new_password"
-                 class="input-field w-full p-2.5 rounded-lg"
+                 class="input-field w-full پ-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
         <div>
@@ -959,5 +973,10 @@
       if (a && !a.hasAttribute('rel')) a.setAttribute('rel', 'noopener');
     });
   </script>
+
+  <!-- ✅ فوتر ثابت برای همه صفحات -->
+  <footer class="fixed bottom-0 left-0 right-0 z-40 bg-gray-900 bg-opacity-80 backdrop-blur text-center text-gray-300 text-sm py-2">
+    تهیه شده توسط مجید نداف کرمانی — پاییز 1404
+  </footer>
 </body>
 </html>
