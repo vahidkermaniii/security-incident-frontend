@@ -39,14 +39,14 @@
     .resource-filter.active { background-color: rgb(37 99 235); color: #fff; }
   </style>
 </head>
-<body class="antialiased">
+<body class="antialiased min-h-screen flex flex-col">
   <!-- jQuery + Persian Date libs (CDN) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
 
   <!-- Login View -->
-  <div id="loginView" class="flex items-center justify-center min-h-screen">
+  <div id="loginView" class="flex-1 flex items-center justify-center">
     <div class="w-full max-w-md p-8 space-y-6 rounded-lg shadow-lg card">
       <div class="text-center">
         <i class="fas fa-shield-halved text-5xl text-blue-500"></i>
@@ -87,7 +87,7 @@
   </div>
 
   <!-- Main App (after login) -->
-  <div id="mainContent" class="hidden">
+  <div id="mainContent" class="flex-1 hidden">
     <!-- Top Nav -->
     <nav class="bg-gray-800 p-4 flex justify-between items-center">
       <div class="flex space-x-4 space-x-reverse">
@@ -975,7 +975,7 @@
   </script>
 
   <!-- ✅ فوتر ثابت برای همه صفحات -->
-  <footer class="fixed bottom-0 left-0 right-0 z-40 bg-gray-900 bg-opacity-80 backdrop-blur text-center text-gray-300 text-sm py-2">
+  <footer class="mt-auto bg-gray-900 bg-opacity-80 backdrop-blur text-center text-gray-300 text-sm py-2">
     تهیه شده توسط مجید نداف کرمانی — پاییز 1404
   </footer>
 </body>
