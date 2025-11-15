@@ -37,6 +37,12 @@
     .echart { width: 100%; height: 100%; }
     /* فیلتر منابع */
     .resource-filter.active { background-color: rgb(37 99 235); color: #fff; }
+
+    /* برای اینکه تصاویر و چارت‌ها از عرض صفحه نزنند بیرون */
+    img, canvas, iframe {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -86,8 +92,10 @@
   <!-- Main App (after login) -->
   <div id="mainContent" class="flex-1 hidden">
     <!-- Top Nav -->
-    <nav class="bg-gray-800 p-4 flex justify-between items-center">
-      <div class="flex space-x-4 space-x-reverse">
+    <!-- ✅ نسخه ریسپانسیو‌شدهٔ منو -->
+    <nav class="bg-gray-800 p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <!-- منوهای بالا -->
+      <div class="flex flex-wrap gap-2">
         <span class="nav-btn text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700" data-target="homePage">
           <i class="fas fa-home ml-2"></i>خانه
         </span>
@@ -110,18 +118,21 @@
           <i class="fas fa-chart-pie ml-2"></i>داشبورد
         </span>
       </div>
-      <div class="flex items-center">
-        <span class="text-gray-300">خوش آمدید، <strong id="displayName"></strong>!</span>
+      <!-- بخش خوش‌آمدید و دکمه‌ها -->
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <span class="text-gray-300 text-sm md:text-base">
+          خوش آمدید، <strong id="displayName"></strong>!
+        </span>
 
-        <button id="navIncidentBtnTop" class="btn-primary text-white font-bold py-2 px-4 rounded-lg text-sm ml-4">
+        <button id="navIncidentBtnTop" class="btn-primary text-white font-bold py-2 px-4 rounded-lg text-sm">
           <i class="fas fa-plus ml-2"></i>ثبت حادثه جدید
         </button>
 
-        <button id="openProfileBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg ml-4">
+        <button id="openProfileBtn" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg">
           <i class="fas fa-user ml-2"></i> تغییر رمز
         </button>
 
-        <button id="logoutBtn" class="btn-danger text-white font-bold py-2 px-4 rounded-lg text-sm ml-4">
+        <button id="logoutBtn" class="btn-danger text-white font-bold py-2 px-4 rounded-lg text-sm">
           <i class="fas fa-sign-out-alt ml-2"></i>خروج
         </button>
       </div>
@@ -257,7 +268,7 @@
           </div>
           <div id="locationFilterContainer">
             <label for="locationFilter" class="block mb-2 text-sm font-medium text-gray-300">محل وقوع</label>
-            <select id="locationFilter" class="input-field w-full پ-2 rounded-lg">
+            <select id="locationFilter" class="input-field w-full p-2 rounded-lg">
               <option value="">همه مکان‌ها</option>
             </select>
           </div>
@@ -929,13 +940,13 @@
         <div>
           <label for="prelogin-new-password" class="block mb-2 text-sm font-medium text-gray-300">رمز جدید</label>
           <input type="password" id="prelogin-new-password" name="new_password"
-                 class="input-field w-full پ-2.5 rounded-lg"
+                 class="input-field w-full p-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
         <div>
           <label for="prelogin-new-password-2" class="block mb-2 text-sm font-medium text-gray-300">تکرار رمز جدید</label>
           <input type="password" id="prelogin-new-password-2" name="new_password_2"
-                 class="input-field w-full پ-2.5 rounded-lg"
+                 class="input-field w-full p-2.5 rounded-lg"
                  autocomplete="new-password" required />
         </div>
 
